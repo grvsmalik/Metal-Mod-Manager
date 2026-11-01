@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-latest, ubuntu-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      # Some files in the repository have paths longer than Windows' default limit.
+      - name: Allow long paths
+        run: git config --global core.longpaths true
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Build
+        run: dotnet build NexusMods.App.sln -c Debug
+
+      # Tests that call the live Nexus Mods API need a personal API key and are excluded here.
+      - name: Test
+        run: dotnet test NexusMods.App.sln -c Debug --no-build --filter "RequiresNetworking!=True&FlakeyTest!=True" --blame-hang-timeout 20m
