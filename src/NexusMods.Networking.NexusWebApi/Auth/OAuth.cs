@@ -49,6 +49,10 @@ public class OAuth
     /// </summary>
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
+        // The website sends the login result back through an nxm:// link. Handle nxm links only while
+        // signing in, so the user's usual handler (for example Vortex) gets them back afterwards.
+        using var handlerRegistration = await _os.RegisterUriSchemeHandlerTemporarily("nxm", cancellationToken);
+
         var job = OAuthJob.Create(
             jobMonitor: _jobMonitor,
             idGenerator: _idGenerator,

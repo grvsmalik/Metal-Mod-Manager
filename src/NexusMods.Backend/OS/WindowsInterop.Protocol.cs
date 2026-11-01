@@ -30,6 +30,81 @@ internal partial class WindowsInterop
         return ValueTask.CompletedTask;
     }
 
+    public async ValueTask<IDisposable> RegisterUriSchemeHandlerTemporarily(string scheme, CancellationToken cancellationToken = default)
+    {
+        if (!IsWindows()) return R3.Disposable.Empty;
+
+        ProtocolHandlerState? previous = null;
+        try
+        {
+            previous = ReadHandlerState(scheme);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Exception while reading the current handler for `{Scheme}`; it won't be restored", scheme);
+        }
+
+        await RegisterUriSchemeHandler(scheme, setAsDefaultHandler: true, cancellationToken);
+        return R3.Disposable.Create(() =>
+        {
+            try
+            {
+                RestoreHandlerState(scheme, previous);
+                _logger.LogInformation("Restored the previous handler for `{Scheme}`", scheme);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Exception while restoring the previous handler for `{Scheme}`", scheme);
+            }
+        });
+    }
+
+    /// <summary>
+    /// The values a protocol handler writes under <c>HKCU\SOFTWARE\Classes\{scheme}</c>; Vortex and MO2 use the same values.
+    /// </summary>
+    private record ProtocolHandlerState(object? Name, object? UrlProtocol, object? Command, object? WorkingDirectory);
+
+    [SupportedOSPlatform("windows")]
+    private static ProtocolHandlerState? ReadHandlerState(string scheme)
+    {
+        using var key = Registry.CurrentUser.OpenSubKey(@$"SOFTWARE\Classes\{scheme}");
+        if (key is null) return null;
+
+        using var commandKey = key.OpenSubKey(@"shell\open\command");
+        return new ProtocolHandlerState(
+            Name: key.GetValue(""),
+            UrlProtocol: key.GetValue("URL Protocol"),
+            Command: commandKey?.GetValue(""),
+            WorkingDirectory: commandKey?.GetValue("WorkingDirectory")
+        );
+    }
+
+    [SupportedOSPlatform("windows")]
+    private static void RestoreHandlerState(string scheme, ProtocolHandlerState? state)
+    {
+        var path = @$"SOFTWARE\Classes\{scheme}";
+        if (state is null)
+        {
+            // Nothing handled the scheme before we registered.
+            Registry.CurrentUser.DeleteSubKeyTree(path, throwOnMissingSubKey: false);
+            return;
+        }
+
+        using var key = Registry.CurrentUser.CreateSubKey(path);
+        SetOrDelete(key, "", state.Name);
+        SetOrDelete(key, "URL Protocol", state.UrlProtocol);
+
+        using var commandKey = key.CreateSubKey(@"shell\open\command");
+        SetOrDelete(commandKey, "", state.Command);
+        SetOrDelete(commandKey, "WorkingDirectory", state.WorkingDirectory);
+
+        static void SetOrDelete(RegistryKey key, string name, object? value)
+        {
+            if (value is null) key.DeleteValue(name, throwOnMissingValue: false);
+            else key.SetValue(name, value);
+        }
+    }
+
     private static string CreateProgId(string uriScheme) => $"NexusMods.App.{uriScheme}";
 
     [SupportedOSPlatform("windows")]

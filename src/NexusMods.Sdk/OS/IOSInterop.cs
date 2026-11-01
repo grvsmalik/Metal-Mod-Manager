@@ -46,6 +46,17 @@ public interface IOSInterop
     ValueTask<FileSystemMount?> GetFileSystemMount(AbsolutePath path, CancellationToken cancellationToken = default);
 
     ValueTask RegisterUriSchemeHandler(string scheme, bool setAsDefaultHandler = true, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Registers this app as the handler for <paramref name="scheme"/> until the returned value is disposed,
+    /// then restores the previous handler where the platform supports it. Without restore support,
+    /// the registration is left in place.
+    /// </summary>
+    async ValueTask<IDisposable> RegisterUriSchemeHandlerTemporarily(string scheme, CancellationToken cancellationToken = default)
+    {
+        await RegisterUriSchemeHandler(scheme, setAsDefaultHandler: true, cancellationToken);
+        return R3.Disposable.Empty;
+    }
 }
 
 /// <summary>
