@@ -1,30 +1,18 @@
 using DynamicData.Kernel;
 using JetBrains.Annotations;
-using Microsoft.AspNetCore.WebUtilities;
 using NexusMods.Abstractions.NexusWebApi.Types;
 using NexusMods.Sdk.NexusModsApi;
 
 namespace NexusMods.Abstractions.Telemetry;
 
-/// NOTE(erri120): This class consolidates all URL tracking parameter related
-/// functionality. Anything that exposes a URL to the user that points to
-/// Nexus Mods should use this class.
-/// Everything in here is hardcoded and parameter values shouldn't be changed.
-/// New methods can be added after talking with the team about this.
+/// Builds every URL the app shows the user that points to Nexus Mods.
+/// Upstream added Matomo campaign parameters to these URLs; Metal Mod Manager adds none.
 [PublicAPI]
 public static class NexusModsUrlBuilder
 {
     private const string BaseUrl = "https://www.nexusmods.com";
     private const string UsersBaseUrl = "https://users.nexusmods.com";
     private const string ParameterValueSource = "nexusmodsapp";
-
-    // From https://matomo.org/faq/reports/what-is-campaign-tracking-and-why-it-is-important/
-    private const string ParameterNameCampaign = "mtm_campaign";
-    private const string ParameterNameKeyword  = "mtm_keyword";
-    private const string ParameterNameMedium   = "mtm_medium";
-    private const string ParameterNameSource   = "mtm_source";
-    private const string ParameterNameContent  = "mtm_content";
-    private const string ParameterNameGroup    = "mtm_group";
 
     /// <summary>
     /// Campaign value for everything related to updating mods in the app.
@@ -47,19 +35,15 @@ public static class NexusModsUrlBuilder
     public const string CampaignDiagnostics = "diagnostics";
 
     /// <summary>
-    /// Creates a new URI by adding tracking parameters to the given <paramref name="baseUrl"/>.
+    /// Creates a URI for the given <paramref name="baseUrl"/>.
     /// </summary>
+    /// <remarks>
+    /// Metal Mod Manager adds no tracking parameters; <paramref name="source"/>, <paramref name="campaign"/>
+    /// and <paramref name="medium"/> are ignored and stay only so that existing call sites compile.
+    /// </remarks>
     public static Uri CreateUri(string baseUrl, string? source = ParameterValueSource, string? campaign = null, string? medium = null)
     {
-        var parameters = new Dictionary<string, string?>
-        {
-            { ParameterNameSource, source },
-            { ParameterNameCampaign, campaign },
-            { ParameterNameMedium, medium },
-        };
-
-        var updated = QueryHelpers.AddQueryString(baseUrl, parameters);
-        return new Uri(updated);
+        return new Uri(baseUrl);
     }
 
     /// <summary>

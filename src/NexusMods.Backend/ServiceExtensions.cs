@@ -11,7 +11,6 @@ using NexusMods.Backend.Jobs;
 using NexusMods.Backend.OS;
 using NexusMods.Backend.Process;
 using NexusMods.Backend.RuntimeDependency;
-using NexusMods.Backend.Tracking;
 using NexusMods.FileExtractor;
 using NexusMods.Paths;
 using NexusMods.Sdk;
@@ -114,15 +113,6 @@ public static class ServiceExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddTracking(this IServiceCollection serviceCollection, TrackingSettings? settings)
-    {
-        if (settings is null || !settings.EnableTracking) return serviceCollection;
-
-        return serviceCollection
-            .AddSingleton<EventTracker>()
-            .AddSingleton<IEventTracker, EventTracker>(provider => provider.GetRequiredService<EventTracker>())
-            .AddHostedService<EventTracker>(provider => provider.GetRequiredService<EventTracker>());
-    }
 
     public static IServiceCollection AddSettingsManager(this IServiceCollection serviceCollection)
     {
