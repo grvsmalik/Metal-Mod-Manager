@@ -44,4 +44,9 @@ public static class EnvironmentVariableNames
     /// Subdomain for the users.
     /// </summary>
     public const string NexusModsUsersSubdomain = Prefix + "NEXUS_MODS_USERS_SUBDOMAIN";
+
+    /// <summary>
+    /// OAuth client ID issued by Nexus Mods to this app. Overrides the built-in value.
+    /// </summary>
+    public const string NexusModsOAuthClientId = Prefix + "NEXUS_MODS_OAUTH_CLIENT_ID";
 }

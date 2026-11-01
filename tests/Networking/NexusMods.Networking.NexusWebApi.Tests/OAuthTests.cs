@@ -13,8 +13,10 @@ namespace NexusMods.Networking.NexusWebApi.Tests;
 
 public class OAuthTests
 {
+    private const string TestClientId = "test-client";
+
     // ReSharper disable once InconsistentNaming
-    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=nma&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
+    private readonly Uri ExpectedAuthURL = new("https://users.nexusmods.com/oauth/authorize?response_type=code&scope=openid profile email&code_challenge_method=S256&client_id=test-client&redirect_uri=nxm%3A%2F%2Foauth%2Fcallback&code_challenge=QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE&state=00000000-0000-0000-0000-000000000000");
     private readonly ILogger<OAuth> _logger;
     private readonly IJobMonitor _jobMonitor;
 
@@ -49,7 +51,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os);
+        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os) { ClientId = TestClientId };
         var tokenTask = oauth.AuthorizeRequest(CancellationToken.None);
         oauth.AddUrl(NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code").OAuth);
         var result = await tokenTask;
@@ -61,6 +63,24 @@ public class OAuthTests
         os.Received(1).OpenUri(ExpectedAuthURL);
         result.Should().BeEquivalentTo(ReplyToken);
         #endregion
+    }
+
+    [Fact]
+    public async Task WithoutClientId_DoesNotSignInOrRefresh()
+    {
+        var messageHandler = Substitute.ForPartsOf<MockHttpMessageHandler>();
+        var httpClient = new HttpClient(messageHandler);
+        var idGen = Substitute.For<IIDGenerator>();
+        var os = Substitute.For<IOSInterop>();
+
+        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os) { ClientId = null };
+
+        oauth.IsAvailable.Should().BeFalse();
+        (await oauth.AuthorizeRequest(CancellationToken.None)).Should().BeNull();
+        (await oauth.RefreshToken("refresh_token", CancellationToken.None)).Should().BeNull();
+
+        os.DidNotReceive().OpenUri(Arg.Any<Uri>());
+        await messageHandler.DidNotReceive().SendMock(Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -87,7 +107,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os);
+        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os) { ClientId = TestClientId };
         var token = await oauth.RefreshToken("refresh_token", CancellationToken.None);
         #endregion
 
@@ -124,7 +144,7 @@ public class OAuthTests
         #endregion
 
         #region Execution
-        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os);
+        var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os) { ClientId = TestClientId };
         Func<Task> call = () => oauth.AuthorizeRequest(CancellationToken.None);
         var tokenTask = call.Should().ThrowAsync<JsonException>();
         oauth.AddUrl(NXMUrl.Parse($"nxm://oauth/callback?state={stateId}&code=code").OAuth);
@@ -150,7 +170,7 @@ public class OAuthTests
     //     #endregion
     //
     //     #region Execution
-    //     var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os);
+    //     var oauth = new OAuth(_jobMonitor, _logger, httpClient, idGen, os) { ClientId = TestClientId };
     //     Func<Task> call = () => oauth.AuthorizeRequest(cts.Token);
     //     var task = call.Should().ThrowAsync<OperationCanceledException>();
     //     cts.Cancel();
@@ -172,7 +192,7 @@ public class OAuthTests
     [Fact]
     public void Test_GenerateAuthorizeUrl()
     {
-        var res = OAuth.GenerateAuthorizeUrl("QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE", "00000000-0000-0000-0000-000000000000");
+        var res = OAuth.GenerateAuthorizeUrl(TestClientId, "QMZ4D7BLeehAXINE9NZ8dho2i5AYVTbfqJ8PhQ4eUrE", "00000000-0000-0000-0000-000000000000");
         res.Should().Be(ExpectedAuthURL);
     }
 }

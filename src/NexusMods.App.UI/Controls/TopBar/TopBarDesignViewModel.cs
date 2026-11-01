@@ -18,6 +18,7 @@ namespace NexusMods.App.UI.Controls.TopBar;
 public class TopBarDesignViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
 {
     [Reactive] public bool IsLoggedIn { get; set; } = true;
+    public bool IsLoginAvailable => true;
     [Reactive] public UserRole UserRole { get; set; } = UserRole.Free;
     [Reactive] public string? Username { get; set; } = "insomnious";
     [Reactive] public IImage Avatar { get; set; } = new Bitmap(AssetLoader.Open(new Uri("avares://NexusMods.App.UI/Assets/DesignTime/cyberpunk_game.png")));

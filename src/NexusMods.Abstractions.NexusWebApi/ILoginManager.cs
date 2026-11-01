@@ -51,6 +51,11 @@ public interface ILoginManager
     IObservable<Uri?> AvatarObservable => UserInfoObservable.Select(static x => x?.AvatarUrl).DistinctUntilChanged().AsSystemObservable();
 
     /// <summary>
+    /// Whether <see cref="LoginAsync"/> can sign in. False while the app has no OAuth client ID of its own.
+    /// </summary>
+    bool IsLoginAvailable { get; }
+
+    /// <summary>
     /// Show a browser and log into Nexus Mods
     /// </summary>
     /// <param name="token"></param>

@@ -18,7 +18,6 @@ public class OAuth
     // NOTE(erri120): The backend has a list of valid redirect URLs and client IDs.
     // We can't change these on our own.
     private const string OAuthRedirectUrl = "nxm://oauth/callback";
-    private const string OAuthClientId = "nma";
 
     private readonly IJobMonitor _jobMonitor;
     private readonly ILogger<OAuth> _logger;
@@ -26,6 +25,16 @@ public class OAuth
     private readonly IOSInterop _os;
     private readonly IIDGenerator _idGenerator;
     private readonly BehaviorSubject<NXMOAuthUrl?> _nxmUrlMessages = new(initialValue: null);
+
+    /// <summary>
+    /// The OAuth client ID to sign in with; see <see cref="ClientConfig.OAuthClientId"/>.
+    /// </summary>
+    internal string? ClientId { get; init; } = ClientConfig.OAuthClientId;
+
+    /// <summary>
+    /// Whether signing in with OAuth is possible, which needs a client ID issued to this app.
+    /// </summary>
+    public bool IsAvailable => ClientId is not null;
 
     /// <summary>
     /// constructor
@@ -49,6 +58,12 @@ public class OAuth
     /// </summary>
     public async Task<JwtTokenReply?> AuthorizeRequest(CancellationToken cancellationToken)
     {
+        if (ClientId is null)
+        {
+            _logger.LogWarning("Can't sign in to Nexus Mods: this app has no OAuth client ID yet");
+            return null;
+        }
+
         // The website sends the login result back through an nxm:// link. Handle nxm links only while
         // signing in, so the user's usual handler (for example Vortex) gets them back afterwards.
         using var handlerRegistration = await _os.RegisterUriSchemeHandlerTemporarily("nxm", cancellationToken);
@@ -58,6 +73,7 @@ public class OAuth
             idGenerator: _idGenerator,
             os: _os,
             httpClient: _http,
+            clientId: ClientId,
             nxmUrlMessages: _nxmUrlMessages.WhereNotNull()
         );
 
@@ -81,10 +97,16 @@ public class OAuth
     /// <returns>a new token reply</returns>
     public async Task<JwtTokenReply?> RefreshToken(string refreshToken, CancellationToken cancel)
     {
+        if (ClientId is null)
+        {
+            _logger.LogWarning("Can't refresh the Nexus Mods sign-in: this app has no OAuth client ID yet");
+            return null;
+        }
+
         var request = new Dictionary<string, string>
         {
             { "grant_type", "refresh_token" },
-            { "client_id", OAuthClientId },
+            { "client_id", ClientId },
             { "refresh_token", refreshToken },
         };
 
@@ -96,6 +118,7 @@ public class OAuth
     }
 
     internal static async Task<JwtTokenReply?> AuthorizeToken(
+        string clientId,
         string verifier,
         string code,
         HttpClient httpClient,
@@ -103,7 +126,7 @@ public class OAuth
     {
         var request = new Dictionary<string, string> {
             { "grant_type", "authorization_code" },
-            { "client_id", OAuthClientId },
+            { "client_id", clientId },
             { "redirect_uri", OAuthRedirectUrl },
             { "code", code },
             { "code_verifier", verifier },
@@ -116,14 +139,14 @@ public class OAuth
         return JsonSerializer.Deserialize<JwtTokenReply>(responseString);
     }
 
-    internal static Uri GenerateAuthorizeUrl(string challenge, string state)
+    internal static Uri GenerateAuthorizeUrl(string clientId, string challenge, string state)
     {
         var request = new Dictionary<string, string?>
         {
             { "response_type", "code" },
             { "scope", "openid profile email" },
             { "code_challenge_method", "S256" },
-            { "client_id", OAuthClientId },
+            { "client_id", clientId },
             { "redirect_uri",  OAuthRedirectUrl },
             { "code_challenge", challenge },
             { "state", state },

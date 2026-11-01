@@ -12,5 +12,10 @@ public interface IWelcomeOverlayViewModel : IOverlayViewModel
     ReactiveCommand<Unit> CommandLogOut { get; }
     IReadOnlyBindableReactiveProperty<bool> IsLoggedIn { get; }
 
+    /// <summary>
+    /// Whether signing in to Nexus Mods is possible in this build.
+    /// </summary>
+    bool IsLoginAvailable { get; }
+
     ReactiveCommand CommandClose { get; }
 }

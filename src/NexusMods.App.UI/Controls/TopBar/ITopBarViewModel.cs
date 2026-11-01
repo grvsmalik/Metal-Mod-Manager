@@ -32,6 +32,10 @@ public interface ITopBarViewModel : IViewModelInterface
     public ReactiveCommand<Unit, Unit> NewTabCommand { get; }
 
     public bool IsLoggedIn { get; }
+    /// <summary>
+    /// Whether signing in to Nexus Mods is possible in this build.
+    /// </summary>
+    public bool IsLoginAvailable { get; }
     public UserRole UserRole { get; }
     public IImage? Avatar { get; }
     public string? Username { get; }

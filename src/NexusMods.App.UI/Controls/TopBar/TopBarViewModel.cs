@@ -57,6 +57,7 @@ public class TopBarViewModel : AViewModel<ITopBarViewModel>, ITopBarViewModel
     public ReactiveUI.ReactiveCommand<Unit, Unit> NewTabCommand { get; }
 
     [Reactive] public bool IsLoggedIn { get; [UsedImplicitly] set; }
+    public bool IsLoginAvailable => _loginManager.IsLoginAvailable;
     [Reactive] public UserRole UserRole { get; [UsedImplicitly] set; }
 
     [Reactive] public IImage? Avatar { get; private set; }

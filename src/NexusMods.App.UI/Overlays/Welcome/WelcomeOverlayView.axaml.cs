@@ -33,8 +33,9 @@ public partial class WelcomeOverlayView : ReactiveUserControl<IWelcomeOverlayVie
             this.WhenAnyValue(view => view.ViewModel!.IsLoggedIn.Value)
                 .Subscribe(isLoggedIn =>
                 {
-                    ButtonLogIn.IsVisible = !isLoggedIn;
+                    ButtonLogIn.IsVisible = !isLoggedIn && ViewModel!.IsLoginAvailable;
                     ButtonLogOut.IsVisible = isLoggedIn;
+                    TextLoginUnavailable.IsVisible = !isLoggedIn && !ViewModel!.IsLoginAvailable;
                     ButtonClose.Text = isLoggedIn ? "Close" : "Guest";
                 })
                 .AddTo(disposables);

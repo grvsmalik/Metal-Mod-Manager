@@ -241,8 +241,16 @@ public sealed class LoginManager : IDisposable, ILoginManager
     /// Show a browser and log into Nexus Mods
     /// </summary>
     /// <param name="token"></param>
+    public bool IsLoginAvailable => _oauth.IsAvailable;
+
     public async Task LoginAsync(CancellationToken token = default)
     {
+        if (!IsLoginAvailable)
+        {
+            _logger.LogWarning("Signing in to Nexus Mods is unavailable until this app has its own OAuth client ID");
+            return;
+        }
+
         JwtTokenReply? jwtToken;
         try
         {
@@ -299,7 +307,12 @@ public sealed class LoginManager : IDisposable, ILoginManager
     public async Task<bool> EnsureLoggedIn(string message, CancellationToken token = default)
     {
         if (await GetIsUserLoggedInAsync(token)) return true;
-        
+        if (!IsLoginAvailable)
+        {
+            _logger.LogWarning("This operation requires a Nexus Mods account, but signing in is unavailable: {Message}", message);
+            return false;
+        }
+
         // TODO: Improve this to show a special dialog to inform the user they need to log in to perform the operation
         // https://github.com/Nexus-Mods/NexusMods.App/issues/2562
         _logger.LogWarning("This operation requires login: {Message}", message);

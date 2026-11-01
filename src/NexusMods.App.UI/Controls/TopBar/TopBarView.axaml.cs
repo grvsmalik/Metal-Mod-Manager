@@ -114,7 +114,7 @@ public partial class TopBarView : ReactiveUserControl<ITopBarViewModel>
                     .Subscribe(b =>
                         {
                             AvatarMenuItemButton.IsVisible = b;
-                            LoginButton.IsVisible = !b;
+                            LoginButton.IsVisible = !b && ViewModel!.IsLoginAvailable;
                         }
                     )
                     .DisposeWith(d);

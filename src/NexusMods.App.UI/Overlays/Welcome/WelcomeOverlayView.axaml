@@ -97,6 +97,12 @@
                            TextWrapping="Wrap"
                            Foreground="{StaticResource NeutralSubduedBrush}"
                            Text="Enjoy the preview, and happy modding!" />
+                <TextBlock x:Name="TextLoginUnavailable"
+                           Theme="{StaticResource BodySMNormalTheme}"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="{StaticResource NeutralSubduedBrush}"
+                           Text="Signing in to Nexus Mods isn't available in this test build yet." />
                 <Border Height="1" Background="{StaticResource SurfaceMidBrush}" />
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"

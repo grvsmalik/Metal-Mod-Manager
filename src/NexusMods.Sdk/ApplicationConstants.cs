@@ -177,7 +177,8 @@ public static class ApplicationConstants
     /// <summary>
     /// Default user agent application name.
     /// </summary>
-    private const string DefaultUserAgentName = "NexusModsApp";
+    // Sent to Nexus Mods as the User-Agent and Application-Name headers. Nexus asks for this to stay the same across versions.
+    private const string DefaultUserAgentName = "MetalModManager";
 
 #endregion
 }

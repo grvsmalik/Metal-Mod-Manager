@@ -23,6 +23,8 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
     private readonly BindableReactiveProperty<bool> _isLoggedIn = new();
     public IReadOnlyBindableReactiveProperty<bool> IsLoggedIn => _isLoggedIn;
 
+    public bool IsLoginAvailable { get; }
+
     public ReactiveCommand CommandClose { get; }
 
     public WelcomeOverlayViewModel(
@@ -31,6 +33,8 @@ public class WelcomeOverlayViewModel : AOverlayViewModel<IWelcomeOverlayViewMode
         ILoginManager loginManager,
         IWindowNotificationService notificationService)
     {
+        IsLoginAvailable = loginManager.IsLoginAvailable;
+
         CommandOpenDiscord = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.DiscordUri));
         CommandOpenForum = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.ForumsUri));
         CommandOpenGitHub = new ReactiveCommand(_ => osInterop.OpenUri(ConstantLinks.GitHubUri));
