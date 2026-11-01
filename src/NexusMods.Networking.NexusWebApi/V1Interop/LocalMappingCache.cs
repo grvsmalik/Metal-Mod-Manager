@@ -1,5 +1,4 @@
 using System.Collections.Frozen;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -71,7 +70,10 @@ internal class LocalMappingCache : IGameDomainToGameIdMappingCache
 
             gameIdToDomain = pairs.DistinctBy(tuple => tuple.Id).ToFrozenDictionary(tuple => tuple.Id, tuple => tuple.Domain);
             gameDomainToId = pairs.DistinctBy(tuple => tuple.Domain).ToFrozenDictionary(tuple => tuple.Domain, tuple => tuple.Id);
-            Debug.Assert(gameIdToDomain.Count == gameDomainToId.Count);
+            // games.json is downloaded from Nexus at build time, and Nexus has since reused some domains
+            // for more than one game id (e.g. "neverwinter", "wrc5"). DistinctBy above keeps the first of each.
+            if (gameIdToDomain.Count != gameDomainToId.Count)
+                logger.LogWarning("games.json maps {Ids} game ids to {Domains} domains; duplicates were dropped", gameIdToDomain.Count, gameDomainToId.Count);
             return true;
         }
         catch (Exception e)

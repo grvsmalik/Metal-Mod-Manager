@@ -1,3 +1,4 @@
+using GameFinder.RegistryUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -33,6 +34,9 @@ public static class ServiceExtensions
         OSInformation.Shared.SwitchPlatform(
             onWindows: () =>
             {
+                // The Steam, GOG and EGS locators read the Windows registry. v0.21.1 registered this in
+                // NexusMods.StandardGameLocators; the move to NexusMods.Backend (#4115) dropped it.
+                serviceCollection.AddSingleton<IRegistry>(WindowsRegistry.Shared);
                 serviceCollection.AddSingleton<IGameLocator, SteamLocator>();
                 serviceCollection.AddSingleton<IGameLocator, GOGLocator>();
                 serviceCollection.AddSingleton<IGameLocator, EGSLocator>();
