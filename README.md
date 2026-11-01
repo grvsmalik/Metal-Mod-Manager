@@ -1,18 +1,35 @@
-<div align="center">
-	<h1>The Nexus Mods app</h1>
-	<img src="https://github.com/Nexus-Mods/NexusMods.MkDocsMaterial.Themes.Next/blob/2b49cf1fdd0f15684c6057259b52210e73705b98/Images/Nexus-Icon.png?raw=true" width="150" align="center" />
-	<br/> <br/>
-    Mod With Confidence
-    <br/>
-    The <i>future</i> of modding with <i>Nexus Mods</i>.
-    <br/><br/>
-    <a href="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml" target="_blank"><img src="https://github.com/Nexus-Mods/NexusMods.App/actions/workflows/clean_environment_tests.yaml/badge.svg" alt="CI Tests"></a>
-    <a href="https://discord.gg/ReWTxb93jS" target="_blank"><img src="https://img.shields.io/discord/1134149061080002713?logo=discord&logoColor=white&color=7289da" alt="Discord"></a>
-</div>
+# Metal Mod Manager
 
-Nexus Mods app is a mod installer, creator and manager for all your popular games.
+A free, open-source mod manager for PC games, for Windows and Linux.
 
-Easy to use, runs on your standard Windows PC and Linux alike. Don't waste time troubleshooting, play your games,
-fill those knees with arrows and most importantly, ***Have Fun***!
+Metal Mod Manager is a community fork of the [Nexus Mods App](https://github.com/Nexus-Mods/NexusMods.App), which Nexus Mods stopped developing and archived in early 2026. It is **not affiliated with or endorsed by Nexus Mods**.
 
-Learn more about the App on the [Wiki](https://nexus-mods.github.io/NexusMods.App/)
+> **Status:** early development, not ready for everyday use. There are no releases yet.
+
+## What is different from the Nexus Mods App
+
+- **No telemetry.** All usage tracking and metrics sent to Nexus Mods are removed, as are the tracking parameters on nexusmods.com links.
+- **Leaves your download links alone.** The app does not take over `nxm://` links from Vortex or other managers. You can turn this on in Settings. Signing in to Nexus Mods borrows the link handler only for the sign-in, then gives it back.
+- **Its own identity.** It uses its own name, executable (`MetalModManager`), data folder and registry entries, so it can sit next to a Nexus Mods App install without sharing data.
+- **Fixes for the archived code.** Two startup crashes on the final upstream commit are fixed.
+
+## Building from source
+
+Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download).
+
+```sh
+git clone --recurse-submodules <this repository>
+cd MetalModManager
+dotnet build src/NexusMods.App/NexusMods.App.csproj
+dotnet run --project src/NexusMods.App
+```
+
+On Windows, enable long paths (`git config core.longpaths true`) before cloning; some files have long names.
+
+Debug builds show every game the code supports, including ones upstream marked as unsupported.
+
+## Credits and licence
+
+Metal Mod Manager is built on the work of the Nexus Mods App team and its contributors. The project and namespace names (`NexusMods.*`) are kept from upstream so that fixes can still be shared between forks.
+
+Licensed under the [GNU General Public License v3.0](LICENSE.md), like the original. The fork point is tagged `upstream-base`, and the original repository is the `upstream` remote.

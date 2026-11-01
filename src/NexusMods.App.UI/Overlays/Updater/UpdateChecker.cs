@@ -26,8 +26,10 @@ public class UpdateChecker
 
     public static bool ShouldCheckForUpdate(Version currentVersion, InstallationMethod installationMethod)
     {
-        // NOTE(erri120): don't check for updates if build from source
-        return installationMethod is not InstallationMethod.Manually;
+        // Metal Mod Manager has no releases yet, and GitHubOrganization/GitHubRepository still name the
+        // upstream Nexus Mods App, which would offer users an "update" to a different app. Re-enable this
+        // (and point it at our repository) once we publish releases.
+        return false;
     }
 
     public async ValueTask<Release?> FetchUpdateRelease(Version currentVersion, CancellationToken cancellationToken = default)

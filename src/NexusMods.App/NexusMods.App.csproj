@@ -2,6 +2,10 @@
     <PropertyGroup>
         <!-- Target WinExe so that a console isn't automatically created on Windows -->
         <OutputType>WinExe</OutputType>
+        <!-- Metal Mod Manager: the executable is MetalModManager(.exe); namespaces keep the upstream NexusMods.* names. -->
+        <AssemblyName>MetalModManager</AssemblyName>
+        <RootNamespace>NexusMods.App</RootNamespace>
+        <Product>Metal Mod Manager</Product>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <ApplicationManifest>app.manifest</ApplicationManifest>
     </PropertyGroup>
