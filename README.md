@@ -1,4 +1,8 @@
-# Metal Mod Manager
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="branding/github-banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="branding/github-banner-light.png">
+  <img alt="Metal Mod Manager" src="branding/github-banner-dark.png">
+</picture>
 
 A free, open-source mod manager for PC games, for Windows and Linux.
 
@@ -32,4 +36,4 @@ Debug builds show every game the code supports, including ones upstream marked a
 
 Metal Mod Manager is built on the work of the Nexus Mods App team and its contributors. The project and namespace names (`NexusMods.*`) are kept from upstream so that fixes can still be shared between forks.
 
-Licensed under the [GNU General Public License v3.0](LICENSE.md), like the original. The fork point is tagged `upstream-base`, and the original repository is the `upstream` remote.
+Licensed under the [GNU General Public License v3.0](LICENSE.md), like the original. The Metal Mod Manager name and logo in [`branding/`](branding/) are not covered by the GPL; see [branding/README.md](branding/README.md). The fork point is tagged `upstream-base`, and the original repository is the `upstream` remote.

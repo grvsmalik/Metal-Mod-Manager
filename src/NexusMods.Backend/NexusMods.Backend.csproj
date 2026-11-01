@@ -57,8 +57,6 @@
             <Pack>true</Pack>
             <PackagePath>build\NexusMods.FileExtractor.targets</PackagePath>
         </None>
-
-        <None Remove="..\..\Nexus-Icon.png" />
     </ItemGroup>
 
     <!-- Non-NuGet Only -->

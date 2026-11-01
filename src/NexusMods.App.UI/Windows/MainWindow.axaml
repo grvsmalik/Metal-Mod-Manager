@@ -1,5 +1,5 @@
 <reactiveUi:ReactiveWindow
-    Icon="/Assets/nexus-logo.ico"
+    Icon="/Assets/Brand/app-icon.ico"
     Title="Metal Mod Manager"
     d:DesignHeight="450"
     d:DesignWidth="800"

@@ -700,6 +700,17 @@ public static class IconValues
     /// Brand pictogram for Health
     /// </summary>
     public static readonly IconValue NexusColor = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/nexus-logo.svg");
+
+    /// <summary>
+    /// Metal Mod Manager's logo mark in full colour, for dark backgrounds. Use for the app's own identity only;
+    /// content from Nexus Mods keeps <see cref="NexusColor"/>. Below 24 px use <see cref="AppLogoSmall"/>.
+    /// </summary>
+    public static readonly IconValue AppLogo = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Brand/logo-mark-color.svg");
+
+    /// <summary>
+    /// Pixel-fitted version of <see cref="AppLogo"/> for 24 px and below.
+    /// </summary>
+    public static readonly IconValue AppLogoSmall = new AvaloniaSvg("avares://NexusMods.App.UI/Assets/Brand/logo-mark-small-color.svg");
     
     /// <summary>
     /// Brand pictogram for Health
