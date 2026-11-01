@@ -18,8 +18,8 @@ Metal Mod Manager is a community fork of the [Nexus Mods App](https://github.com
 Requires the [.NET 9 SDK](https://dotnet.microsoft.com/download).
 
 ```sh
-git clone --recurse-submodules <this repository>
-cd MetalModManager
+git clone --recurse-submodules https://github.com/grvsmalik/Metal-Mod-Manager.git
+cd Metal-Mod-Manager
 dotnet build src/NexusMods.App/NexusMods.App.csproj
 dotnet run --project src/NexusMods.App
 ```
